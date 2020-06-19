@@ -55,14 +55,22 @@
 </template>
 
 <script>
-import {reactive, ref} from '@vue/composition-api'
 import {validateEmail, stripscript, validatePass, validateVCode} from '@/utils/validate';
 export default {
   name: "login",
-  // 这里面放置data数据、生命周期、自定义的函数
-  setup(props, context) {
+  data() {
+    // 验证码校验
+    var validateCode = (rule, value, callback) => {
+      if (value === '') {
+        return callback(new Error("请输入验证码"));
+      } else if (validateVCode(value)) {
+        return callback(new Error('验证码格式有误'));
+      } else {
+        callback();
+      }
+    };
     // 用户名验证
-    let validateUsername = (rule, value, callback) => {
+    var validateUsername = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入用户名"));
       } else if(validateEmail(value)) {
@@ -71,12 +79,10 @@ export default {
           callback();
       }
     };
-
-    // 密码验证
-    let validatePassWord = (rule, value, callback) => {
+    var validatePassWord = (rule, value, callback) => {
         // 过滤特殊字符
-        ruleForm.password = stripscript(value);
-        value = ruleForm.password;
+        this.ruleForm.password = stripscript(value);
+        value = this.ruleForm.password;
         if (value === '') {
           callback(new Error("请输入密码"));
         } else if (validatePass(value)) {
@@ -85,15 +91,13 @@ export default {
           callback();
         }
     };
-
-    // 重复密码验证
-    let validateCheckPass = (rule, value, callback) => {
-        if (model.value === 'login') {
+    var validateCheckPass = (rule, value, callback) => {
+        if (this.model === 'login') {
             callback();
         }
         // 过滤特殊字符
-        ruleForm.checkpass = stripscript(value);
-        value = ruleForm.checkpass;
+        this.ruleForm.checkpass = stripscript(value);
+        value = this.ruleForm.checkpass;
         if (value === '') {
           callback(new Error("请输入密码"));
         } else if (validatePass(value)) {
@@ -104,56 +108,30 @@ export default {
           callback();
         }
     };
-
-    // 验证码校验
-    let validateCode = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error("请输入验证码"));
-      } else if (validateVCode(value)) {
-        return callback(new Error('验证码格式有误'));
-      } else {
-        callback();
-      }
-    };
-
-    /**声明数据 */
-    // 1.对象数据
-    const menuTab = reactive([
+    return {
+      msg: "登录页面",
+      menuTab: [
         { txt: "登录", current: true, type: "login" },
         { txt: "注册", current: false, type: "register" }
-    ]);
-
-    const ruleForm = reactive({
+      ],
+      ruleForm: {
         username: "",
         password: "",
         checkpass: "",
-        code: ""
-    });
-
-    const rules = reactive({
+        code: "",
+        model: "login"
+      },
+      rules: {
         username: [{ validator: validateUsername, trigger: "blur" }],
         password: [{ validator: validatePassWord, trigger: "blur" }],
         checkpass: [{ validator: validateCheckPass, trigger: "blur" }],
         code: [{ validator: validateCode, trigger: "blur" }]
-    });
-
-    // 2.基本数据
-    const model = ref('login');
-
-    /**声明函数 */
-    // 模块切换
-    const toggleMenu = (data => {
-        // console.log(data)
-        menuTab.forEach((elem, index) => {
-          elem.current = false;
-        });
-        data.current = true
-        // 修改模块值
-        model.value = data.type
-    });
-
-    const submitForm = (formName =>{
-      context.refs[formName].validate(valid => {
+      }
+    };
+  },
+  methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           alert("submit!");
         } else {
@@ -161,11 +139,23 @@ export default {
           return false;
         }
       });
-    })
-
-    return {menuTab, model, toggleMenu, ruleForm, rules, submitForm};
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    },
+    // 模块切换
+    toggleMenu(data) {
+        // console.log(data)
+        this.menuTab.forEach((elem, index) => {
+          elem.current = false;
+        });
+        data.current = true
+        // 修改模块值
+        this.model = data.type
+    }
   },
-  created() {}
+  created() {},
+  mounted() {}
 };
 </script>
 <style lang="scss" scope>
