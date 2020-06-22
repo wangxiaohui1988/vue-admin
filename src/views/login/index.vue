@@ -54,7 +54,7 @@
               <el-input v-model="ruleForm.code" minlength="6" maxlength="6"></el-input>
             </el-col>
             <el-col :span="12">
-              <el-button type="success" class="block">获取验证码</el-button>
+              <el-button type="success" class="block" @click="getSms()">获取验证码</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -71,6 +71,7 @@
 <script>
 import { reactive, ref } from '@vue/composition-api'
 import { validateEmail, stripscript, validatePass, validateVCode } from '@/utils/validate'
+import { GetSms } from '@/api/login'
 
 export default {
   name: 'login',
@@ -167,6 +168,17 @@ export default {
       model.value = data.type;
     };
 
+    /**获取验证码 */
+    const getSms = (() => {
+      var requestData = {
+        username: ruleForm.username
+      }
+      GetSms(requestData).then((response) => {
+        var data = response.data;
+        console.log(data);
+      });
+    })
+
     const submitForm = formName => {
       context.refs[formName].validate(valid => {
         if (valid) {
@@ -178,7 +190,7 @@ export default {
       });
     };
 
-    return { menuTab, model, toggleMenu, ruleForm, rules, submitForm };
+    return { menuTab, model, toggleMenu, ruleForm, rules, submitForm, getSms };
   },
   created() {}
 };
