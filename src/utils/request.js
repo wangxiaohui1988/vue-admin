@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Message } from 'element-ui';
 
 const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/devApi';
 
@@ -8,7 +9,7 @@ const service = axios.create({
     timeout: 1000
 });
 
-console.log(process.env.NODE_ENV);
+// console.log(process.env.NODE_ENV);
 
 // Add a request interceptor
 service.interceptors.request.use(function (config) {
@@ -22,7 +23,13 @@ service.interceptors.request.use(function (config) {
 // Add a response interceptor
 service.interceptors.response.use(function (response) {
     // Do something with response data
-    return response;
+    var data = response.data;
+    if (data.resCode != 0) {
+        Message.error(data.message);
+        return Promise.reject(data);
+    } else {
+        return response; 
+    }
   }, function (error) {
     // Do something with response error
     return Promise.reject(error);

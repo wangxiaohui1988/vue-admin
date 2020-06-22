@@ -24,7 +24,7 @@
         </el-form-item>
 
         <el-form-item prop="password" class="item-from">
-          <label>密码</label>
+          <label for="password">密码</label>
           <el-input
             id="password"
             type="password"
@@ -36,7 +36,7 @@
         </el-form-item>
 
         <el-form-item prop="checkpass" class="item-from" v-show="model === 'register'">
-          <label>重复密码</label>
+          <label for="checkpass">重复密码</label>
           <el-input
             id="checkpass"
             type="password"
@@ -48,10 +48,10 @@
         </el-form-item>
 
         <el-form-item prop="code" class="item-from">
-          <label>验证码</label>
+          <label for="code">验证码</label>
           <el-row :gutter="10">
             <el-col :span="12">
-              <el-input v-model="ruleForm.code" minlength="6" maxlength="6"></el-input>
+              <el-input id="code" v-model="ruleForm.code" minlength="6" maxlength="6"></el-input>
             </el-col>
             <el-col :span="12">
               <el-button type="success" class="block" @click="getSms()">获取验证码</el-button>
@@ -60,7 +60,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="danger" @click="submitForm('ruleForm')" class="login-btn block">提交</el-button>
+          <el-button type="danger" @click="submitForm('ruleForm')" :disabled="loginButStatus" class="login-btn block">{{ model === 'login' ? '登录' : '注册'}}</el-button>
           <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
         </el-form-item>
       </el-form>
@@ -76,7 +76,7 @@ import { GetSms } from '@/api/login'
 export default {
   name: 'login',
   // 这里面放置data数据、生命周期、自定义的函数
-  setup(props, context) {
+  setup(props, { refs, root }) {
     // 用户名验证
     let validateUsername = (rule, value, callback) => {
       if (value === '') {
@@ -155,6 +155,8 @@ export default {
 
     // 2.基本数据
     const model = ref("login");
+    // 登录按钮禁用状态
+    const loginButStatus = ref(true);
 
     /**声明函数 */
     // 模块切换
@@ -170,12 +172,27 @@ export default {
 
     /**获取验证码 */
     const getSms = (() => {
+      // 邮箱为空验证
+      if (ruleForm.username == '') {
+        root.$message.error('邮箱不能为空！！');
+        return false;
+      }
+
+      // 邮箱格式验证
+      if (validateEmail(ruleForm.username)) {
+        root.$message.error('邮箱格式错误！！');
+        return false;
+      }
+
       var requestData = {
         username: ruleForm.username
       }
       GetSms(requestData).then((response) => {
         var data = response.data;
-        console.log(data);
+        // 登录按钮启用
+        loginButStatus.value = false;
+      }).catch(error => {
+        console.log(error);
       });
     })
 
@@ -190,7 +207,16 @@ export default {
       });
     };
 
-    return { menuTab, model, toggleMenu, ruleForm, rules, submitForm, getSms };
+    return { 
+      menuTab, 
+      model, 
+      loginButStatus, 
+      toggleMenu, 
+      ruleForm, 
+      rules, 
+      submitForm, 
+      getSms 
+    };
   },
   created() {}
 };
