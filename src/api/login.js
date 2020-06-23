@@ -10,3 +10,25 @@ export function GetSms(data) {
         data
     })
 }
+
+/**
+ * 注册 
+ * */
+export function Register(data) {
+    return service.request({
+       method: "post",
+       url: "/register/",
+       data
+    })
+}
+
+/**
+ * 登录
+ */
+export function Long(data) {
+    return service.request({
+        method: 'post',
+        url: '/login/',
+        data
+    })
+}
