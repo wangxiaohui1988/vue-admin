@@ -69,6 +69,7 @@
 </template>
 
 <script>
+import sha1 from 'js-sha1'
 import { reactive, ref } from '@vue/composition-api'
 import { Message } from 'element-ui'
 import { validateEmail, stripscript, validatePass, validateVCode } from '@/utils/validate'
@@ -177,7 +178,7 @@ export default {
       // 修改模块值
       model.value = data.type;
       // 重置表单
-      refs.ruleForm.resetFields();
+      resetForm();
       // 重置验证码按钮
       clearCountDown();
     };
@@ -221,6 +222,7 @@ export default {
       });
     })
 
+    /**表单提交 */
     const submitForm = formName => {
       refs[formName].validate(valid => {
         if (valid) {
@@ -240,7 +242,7 @@ export default {
     const register = (() => {
       let requestData = {
         username: ruleForm.username,
-        password: ruleForm.password,
+        password: sha1(ruleForm.password),
         code: ruleForm.code
       }
       
@@ -262,7 +264,7 @@ export default {
     const login = (() => {
       let requestData = {
         username: ruleForm.username,
-        password: ruleForm.password,
+        password: sha1(ruleForm.password),
         code: ruleForm.code
       } 
       
@@ -291,7 +293,6 @@ export default {
         if (time === 0) {
           codeButStatus.status = false;
           codeButStatus.text = '再次发送';
-          clearCountDown();
         } else {
           codeButStatus.text = `倒计时${time}秒`  // es5 '倒计时' + time + '秒'
         }
@@ -304,6 +305,11 @@ export default {
       codeButStatus.text = '获取验证码';
       // 清除倒计时
       clearInterval(timer.value);
+    });
+
+    // 重置表单
+    const resetForm = (() => {
+      refs.ruleForm.resetFields();
     })
 
     return { 
