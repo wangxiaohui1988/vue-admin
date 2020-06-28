@@ -1,9 +1,8 @@
 <template>
-    <div>控制台</div>
+  <div>信息分类</div>
 </template>
 <script>
 export default {
-  name: 'Index'
 }
 </script>
 <style lang="scss" scope>

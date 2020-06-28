@@ -2,16 +2,17 @@
     <div>
       <LayoutNav></LayoutNav>
       <LayoutHeader></LayoutHeader>
-      <LayoutMain></LayoutMain>
+      <layoutMain></layoutMain>
     </div>
 </template>
 <script>
+// import LayoutMain from './Components/Main'
+import LayoutNav from './Components/Nav.vue'
 import LayoutHeader from './Components/Header'
-import LayoutMain from './Components/Main'
-import LayoutNav from './Components/Nav'
+import layoutMain from './Components/Main'
 export default {
-  name: 'layout',
-  comments: { LayoutHeader, LayoutNav, LayoutMain },
+  name: 'LayoutIndex',
+  components: { LayoutNav, LayoutHeader, layoutMain },
   setup (props, { refs, root }) {}
 }
 </script>
