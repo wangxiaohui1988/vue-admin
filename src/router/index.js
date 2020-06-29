@@ -2,7 +2,14 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../views/login/index.vue'
 
+import Layout from '../views/Layout/index.vue'
+
 Vue.use(VueRouter)
+
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (location) {
+  return originalPush.call(this, location).catch(err => err)
+}
 
 const routes = [
   {
@@ -28,9 +35,11 @@ const routes = [
     name: 'Console',
     redirect: 'index',
     meta: {
-      name: '控制台'
+      name: '控制台',
+      icon: 'console'
     },
-    component: () => import('../views/Layout/index.vue'),
+    // component: () => import('../views/Layout/index.vue'),
+    component: Layout,
     children: [
       {
         path: '/index',
@@ -46,9 +55,10 @@ const routes = [
     path: '/info',
     name: 'Info',
     meta: {
-      name: '信息管理'
+      name: '信息管理',
+      icon: 'info'
     },
-    component: () => import('../views/Layout/index.vue'),
+    component: Layout,
     children: [
       {
         path: '/infoIndex',
@@ -72,9 +82,10 @@ const routes = [
     path: '/user',
     name: 'User',
     meta: {
-      name: '用户管理'
+      name: '用户管理',
+      icon: 'user'
     },
-    component: () => import('../views/Layout/index.vue'),
+    component: Layout,
     children: [
       {
         path: '/userIndex',

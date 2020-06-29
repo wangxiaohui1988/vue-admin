@@ -1,20 +1,20 @@
 <template>
   <div id="nav-wrap">
+    <h1 class="logo"><img src="../../../assets/logo.png" alt=""></h1>
     <el-menu
       default-active="1-4-1"
       class="el-menu-vertical-demo"
       background-color="transparent"
       text-color="#fff"
       active-text-color="#fff"
-      @open="handleOpen"
-      @close="handleClose"
       router
     >
       <template v-for="(item, index) in routes">
         <el-submenu v-if="!item.hidden" :index="index + ''" :key="item.id">
           <!-- 一级菜单 -->
           <template slot="title">
-            <i class="el-icon-location"></i>
+            <!-- <svg-icon  :iconClass="item.meta.icon" :className="item.meta.icon"></svg-icon> -->
+            <i class="el-icon-menu"></i>
             <span>{{ item.meta.name }}</span>
           </template>
           <!-- 二级菜单 -->
@@ -46,6 +46,13 @@ export default {
 </script>
 <style lang="scss" scope>
 @import "../../../styles/config.scss";
+.logo {
+  text-align: center;
+  img {
+    margin: 28px auto 25px;
+    width: 92px;
+  }
+}
 #nav-wrap {
   position: fixed;
   top: 0;
@@ -53,6 +60,10 @@ export default {
   width: $navMenu;
   height: 100vh;
   background-color: #344a5f;
+  svg {
+    font-size: 20px;
+    margin-right: 10px;
+  }
 }
 
 .open {
