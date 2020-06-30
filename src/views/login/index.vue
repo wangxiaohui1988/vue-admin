@@ -73,7 +73,7 @@ import sha1 from 'js-sha1'
 import { reactive, ref } from '@vue/composition-api'
 // import { Message } from 'element-ui'
 import { validateEmail, stripscript, validatePass, validateVCode } from '@/utils/validate'
-import { GetSms, Register, Login } from '@/api/login'
+import { GetSms, Register } from '@/api/login'
 
 export default {
   name: 'login',
@@ -266,19 +266,29 @@ export default {
         password: sha1(ruleForm.password),
         code: ruleForm.code
       }
-      Login(requestData).then(response => {
-        let data = response.data
-        root.$message({
-          message: data.message,
-          type: 'success'
-        })
+      root.$store.dispatch('login', requestData).then(response => {
+        // let data = response.data
+        // console.log(data)
         // 跳转到主页面
         root.$router.push({
           name: 'Console'
         })
-      }).catch((err) => {
-        console.log(err)
+      }).catch(error => {
+        console.log(error)
       })
+      // Login(requestData).then(response => {
+      //   let data = response.data
+      //   root.$message({
+      //     message: data.message,
+      //     type: 'success'
+      //   })
+      //   // 跳转到主页面
+      //   root.$router.push({
+      //     name: 'Console'
+      //   })
+      // }).catch((err) => {
+      //   console.log(err)
+      // })
     }
 
     const countDown = (number) => {
