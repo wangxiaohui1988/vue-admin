@@ -15,8 +15,8 @@ export default {
   setup (props, { root }) {
     /** 定义函数 */
     const navMenuState = () => {
+      // 调用store中函数
       root.$store.commit('SET_COLLAPSE')
-      console.log(root.$store.state.isCollapse)
     }
 
     return { navMenuState }
@@ -28,7 +28,7 @@ export default {
 #header-wrap {
   position: fixed;
   top: 0;
-  right: 30px;
+  right: 0;
   left: $navMenu + 30;
   height: 75px;
   background-color: #fff;

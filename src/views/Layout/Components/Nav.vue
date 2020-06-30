@@ -38,6 +38,7 @@ export default {
     /** 属性计算 */
     // 导航栏水平伸缩
     const isCollapse = computed(() => {
+      // 获取store中数据
       return root.$store.state.isCollapse
     })
 
@@ -61,6 +62,7 @@ export default {
   width: $navMenu;
   height: 100vh;
   background-color: #344a5f;
+  -webkit-transition: all .3s ease 0s;
   svg {
     font-size: 20px;
     margin-right: 10px;
