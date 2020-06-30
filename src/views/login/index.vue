@@ -266,7 +266,7 @@ export default {
         password: sha1(ruleForm.password),
         code: ruleForm.code
       }
-      root.$store.dispatch('login', requestData).then(response => {
+      root.$store.dispatch('login/login', requestData).then(response => {
         // let data = response.data
         // console.log(data)
         // 跳转到主页面

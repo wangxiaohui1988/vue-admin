@@ -16,7 +16,7 @@ export default {
     /** 定义函数 */
     const navMenuState = () => {
       // 调用store中函数
-      root.$store.commit('SET_COLLAPSE')
+      root.$store.commit('app/SET_COLLAPSE')
     }
 
     return { navMenuState }

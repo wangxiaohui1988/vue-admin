@@ -39,7 +39,7 @@ export default {
     // 导航栏水平伸缩
     const isCollapse = computed(() => {
       // 获取store中数据
-      return root.$store.state.isCollapse
+      return root.$store.state.app.isCollapse
     })
 
     return { routes, isCollapse }
