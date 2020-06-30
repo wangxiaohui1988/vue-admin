@@ -8,13 +8,14 @@
       text-color="#fff"
       active-text-color="#fff"
       router
+      :collapse="isCollapse"
     >
       <template v-for="(item, index) in routes">
         <el-submenu v-if="!item.hidden" :index="index + ''" :key="item.id">
           <!-- 一级菜单 -->
           <template slot="title">
-            <!-- <svg-icon  :iconClass="item.meta.icon" :className="item.meta.icon"></svg-icon> -->
-            <i class="el-icon-menu"></i>
+            <svg-icon  :iconClass="item.meta.icon" :className="item.meta.icon"></svg-icon>
+            <!-- <i class="el-icon-menu"></i> -->
             <span>{{ item.meta.name }}</span>
           </template>
           <!-- 二级菜单 -->
@@ -27,20 +28,20 @@
   </div>
 </template>
 <script>
-import { reactive } from '@vue/composition-api'
+import { reactive, computed } from '@vue/composition-api'
 export default {
   name: 'navMenu',
   setup (props, { root }) {
     /** data数据 */
     const routes = reactive(root.$router.options.routes)
-    /** 函数 */
-    const handleOpen = (key, keyPath) => {
-      console.log(key, keyPath)
-    }
-    const handleClose = (key, keyPath) => {
-      console.log(key, keyPath)
-    }
-    return { routes, handleOpen, handleClose }
+
+    /** 属性计算 */
+    // 导航栏水平伸缩
+    const isCollapse = computed(() => {
+      return root.$store.state.isCollapse
+    })
+
+    return { routes, isCollapse }
   }
 }
 </script>

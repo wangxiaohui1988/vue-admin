@@ -1,6 +1,6 @@
 <template>
   <div id="header-wrap">
-    <div class="pull-left header-icon"><svg-icon iconClass="menu" className="menu"></svg-icon></div>
+    <div class="pull-left header-icon" @click="navMenuState"><svg-icon iconClass="menu" className="menu"></svg-icon></div>
     <div class="pull-right">
       <div class="user-info pull-left">
         管理员
@@ -11,7 +11,16 @@
 </template>
 <script>
 export default {
-  name: 'layoutHeader'
+  name: 'layoutHeader',
+  setup (props, { root }) {
+    /** 定义函数 */
+    const navMenuState = () => {
+      root.$store.commit('SET_COLLAPSE')
+      console.log(root.$store.state.isCollapse)
+    }
+
+    return { navMenuState }
+  }
 }
 </script>
 <style lang="scss" scope>
