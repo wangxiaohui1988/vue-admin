@@ -35,7 +35,7 @@ export default {
     /** data数据 */
     const routes = reactive(root.$router.options.routes)
 
-    /** 属性计算 */
+    /** 监控数据 */
     // 导航栏水平伸缩
     const isCollapse = computed(() => {
       // 获取store中数据

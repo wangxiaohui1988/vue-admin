@@ -3,23 +3,38 @@
     <div class="pull-left header-icon" @click="navMenuState"><svg-icon iconClass="menu" className="menu"></svg-icon></div>
     <div class="pull-right">
       <div class="user-info pull-left">
-        管理员
+        {{ username }}
       </div>
-      <div class="header-icon pull-left"><svg-icon iconClass="exit" className="exit"></svg-icon></div>
+      <div class="header-icon pull-left" @click="exit">
+        <svg-icon iconClass="exit" className="exit"></svg-icon>
+      </div>
     </div>
   </div>
 </template>
 <script>
+import { computed } from '@vue/composition-api'
 export default {
   name: 'layoutHeader',
   setup (props, { root }) {
+    const username = computed(() => root.$store.state.app.username)
+
     /** 定义函数 */
     const navMenuState = () => {
       // 调用store中函数
       root.$store.commit('app/SET_COLLAPSE')
     }
 
-    return { navMenuState }
+    // 退出
+    const exit = () => {
+      root.$store.dispatch('app/exit').then(response => {
+        // 跳转到登录页
+        root.$router.push({
+          name: 'Login'
+        })
+      })
+    }
+
+    return { username, navMenuState, exit }
   }
 }
 </script>
