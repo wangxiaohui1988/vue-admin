@@ -9,6 +9,8 @@ import VueCompositionApi from '@vue/composition-api'
 // 自定义全局组件
 import './icons/index'
 
+import './router/premit'
+
 Vue.use(VueCompositionApi)
 Vue.use(ElementUI)
 Vue.config.productionTip = false
