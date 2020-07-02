@@ -6,7 +6,6 @@
     </div>
 </template>
 <script>
-// import LayoutMain from './Components/Main'
 import LayoutNav from './Components/Nav.vue'
 import LayoutHeader from './Components/Header'
 import layoutMain from './Components/Main'

@@ -9,7 +9,6 @@ export default {
   name: 'svgIcon',
   // props: ['iconClass', 'className'],
   props: {
-    // 分页
     iconClass: {
       type: String, // 定义接收的值类型
       default: ''
