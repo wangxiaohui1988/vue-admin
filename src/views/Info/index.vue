@@ -57,7 +57,7 @@
       </el-col>
       <!-- <el-col :span="3"><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></el-col> -->
       <el-col :span="2">
-        <el-button type="danger" class="pull-right" style="width: 100%;">新增</el-button>
+        <el-button type="danger" class="pull-right" style="width: 100%;" @click="dialogFormVisible = true">新增</el-button>
       </el-col>
     </el-row>
 
@@ -98,13 +98,22 @@
         </el-pagination>
       </el-col>
     </el-row>
+    <DialogInfo :flag="dialogFormVisible" @formVisible="changeDialogFormVisible"></DialogInfo>
   </div>
 </template>
 <script>
 import { reactive, ref } from '@vue/composition-api'
+import DialogInfo from './dialog/info'
 export default {
   name: 'infoIndex',
+  components: { DialogInfo },
   setup (props, { root }) {
+    const value = ref('')
+    const dateValue = ref('')
+    const searchKey = ref('')
+    const searchKeyWork = ref('')
+    const dialogFormVisible = ref(false)
+
     const options = reactive([
       {
         value: 1,
@@ -157,19 +166,26 @@ export default {
         user: '王小虎'
       }])
 
-    const value = ref('')
-    const dateValue = ref('')
-    const searchKey = ref('')
-    const searchKeyWork = ref('')
-
     const handleEdit = (index, row) => {
-      console.log(index, row)
+      // console.log(index, row)
     }
     const handleDelete = (index, row) => {
       console.log(index, row)
     }
 
+    const handleSizeChange = (val) => {
+      console.log(`每页 ${val} 条`)
+    }
+    const handleCurrentChange = (val) => {
+      console.log(`当前页: ${val}`)
+    }
+    const changeDialogFormVisible = (formVisible) => {
+      console.log('dialogFormVisible', formVisible)
+      dialogFormVisible.value = formVisible
+    }
+
     return {
+      dialogFormVisible,
       options,
       options2,
       value,
@@ -178,7 +194,10 @@ export default {
       searchKeyWork,
       tableData,
       handleEdit,
-      handleDelete
+      handleDelete,
+      handleSizeChange,
+      handleCurrentChange,
+      changeDialogFormVisible
     }
   }
 }
