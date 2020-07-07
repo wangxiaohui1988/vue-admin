@@ -77,7 +77,7 @@
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            @click="deleteItem(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -85,7 +85,7 @@
     <div class="black-space-30"></div>
     <el-row>
       <el-col :span="12">
-        <button size="medium">批量删除</button>
+        <button size="medium" @click="batchDelete">批量删除</button>
       </el-col>
       <el-col :span="12">
         <el-pagination
@@ -104,10 +104,12 @@
 <script>
 import { reactive, ref } from '@vue/composition-api'
 import DialogInfo from './dialog/info'
+import { global } from '@/utils/global-vue3.0'
 export default {
   name: 'infoIndex',
   components: { DialogInfo },
   setup (props, { root }) {
+    const { confirm } = global()
     const value = ref('')
     const dateValue = ref('')
     const searchKey = ref('')
@@ -169,8 +171,63 @@ export default {
     const handleEdit = (index, row) => {
       // console.log(index, row)
     }
-    const handleDelete = (index, row) => {
+    const deleteItem = (index, row) => {
       console.log(index, row)
+      // root.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning',
+      //   center: true
+      // }).then(() => {
+      //   root.$message({
+      //     type: 'success',
+      //     message: '删除成功!'
+      //   })
+      // }).catch(() => {
+      //   root.$message({
+      //     type: 'info',
+      //     message: '已取消删除'
+      //   })
+      // })
+
+      // 调用全局方法
+      // root.confirm({
+      //   content: '确认删除当前信息，确认后将无法恢复！！',
+      //   tip: '警告',
+      //   type: 'warning',
+      //   fn: confirmDelete
+      // })
+
+      // Vue3.0方法封装调用
+      confirm({
+        content: '确认删除当前信息，确认后将无法恢复！！',
+        tip: '警告',
+        type: 'warning',
+        fn: confirmDelete
+      })
+    }
+
+    const batchDelete = (index, row) => {
+      console.log(index, row)
+      // 调用全局方法
+      // root.confirm({
+      //   content: '确认删除选中的全部记录?',
+      //   tip: '提示',
+      //   type: 'success',
+      //   fn: confirmDelete
+      // })
+
+      // Vue3.0方法封装调用
+      confirm({
+        content: '确认删除选中的全部记录?',
+        tip: '提示',
+        type: 'success',
+        fn: confirmDelete
+      })
+    }
+
+    const confirmDelete = (value) => {
+      console.log('删除数据操作')
     }
 
     const handleSizeChange = (val) => {
@@ -194,7 +251,8 @@ export default {
       searchKeyWork,
       tableData,
       handleEdit,
-      handleDelete,
+      deleteItem,
+      batchDelete,
       handleSizeChange,
       handleCurrentChange,
       changeDialogFormVisible
