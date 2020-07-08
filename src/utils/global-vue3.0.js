@@ -11,10 +11,9 @@ export function global (params) {
       type: params.type || 'warning',
       center: true
     }).then(() => {
-      params.fn()
-      console.log('delete success')
+      let requestData = params.id || ''
+      params.fn(requestData)
     }).catch(() => {
-      console.log('delete error')
     })
   }
   return { str, confirm }

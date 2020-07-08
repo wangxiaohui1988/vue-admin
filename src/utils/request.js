@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
+import { getToken, getUserName } from '@/utils/app'
 
 const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/devApi'
 
@@ -11,7 +12,8 @@ const service = axios.create({ baseURL: BASEURL, timeout: 1000 })
 // Add a request interceptor
 service.interceptors.request.use(function (config) {
   // Do something before request is sent
-  config.headers.Tokey = '1111'
+  config.headers.Tokey = getToken()
+  config.headers.UserName = getUserName()
   return config
 }, function (error) {
   // Do something with request error
