@@ -7,10 +7,10 @@
           <div class="warp-content">
             <el-select v-model="value" clearable placeholder='请选择' style="width: 100%;">
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="item in options.category"
+                :key="item.id"
+                :label="item.category_name"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -102,7 +102,7 @@
   </div>
 </template>
 <script>
-import { reactive, ref } from '@vue/composition-api'
+import { reactive, ref, onMounted } from '@vue/composition-api'
 import DialogInfo from './dialog/info'
 import { global } from '@/utils/global-vue3.0'
 export default {
@@ -116,20 +116,9 @@ export default {
     const searchKeyWork = ref('')
     const dialogFormVisible = ref(false)
 
-    const options = reactive([
-      {
-        value: 1,
-        label: '国内信息'
-      },
-      {
-        value: 2,
-        label: '国内信息'
-      },
-      {
-        value: 3,
-        label: '行业信息'
-      }
-    ])
+    const options = reactive({
+      category: []
+    })
 
     const options2 = reactive([
       {
@@ -226,6 +215,15 @@ export default {
       })
     }
 
+    // 调用Vuex的公用方法，获取分类信息
+    const getInfoCategory = () => {
+      root.$store.dispatch('common/getInfoCategory').then(response => {
+        options.category = response
+      }).catch(error => {
+        console.log(error)
+      })
+    }
+
     const confirmDelete = (value) => {
       console.log('删除数据操作')
     }
@@ -240,6 +238,12 @@ export default {
       console.log('dialogFormVisible', formVisible)
       dialogFormVisible.value = formVisible
     }
+
+    /** 生命周期 */
+    onMounted(() => {
+      // 获取分类信息
+      getInfoCategory()
+    })
 
     return {
       dialogFormVisible,

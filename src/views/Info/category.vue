@@ -47,15 +47,16 @@
   </div>
 </template>
 <script>
-import { reactive, ref, onMounted } from '@vue/composition-api'
-import { AddFirstCategory, GetInfoCategoryAll, DelFirstCategory, EditFirstCategory } from '@/api/news'
+import { reactive, ref, onMounted, watch } from '@vue/composition-api'
+import { AddFirstCategory, DelFirstCategory, EditFirstCategory } from '@/api/news'
 import { global } from '@/utils/global-vue3.0'
+import { common } from '@/utils/common'
 export default {
   name: 'category',
   setup (props, { refs, root }) {
     /** global */
     const { confirm } = global()
-
+    const { categoryItem, getInfoCategory } = common()
     /** ref数据定义 */
     const categoryChildrenInput = ref(true)
     const firstCategoryDisable = ref(true)
@@ -117,6 +118,7 @@ export default {
       submitButtonType.value = params.type
       submitButtonDisable.value = false
       firstCategoryDisable.value = false
+      categoryChildrenInput.value = false
       ruleForm.categoryName = params.data.category_name
       category.current = params.data
     }
@@ -124,6 +126,7 @@ export default {
     const editFirstCategory = () => {
       if (category.current.length === 0) {
         root.$message.error('未选择分类！！')
+        return
       }
       let requestData = {
         id: category.current.id,
@@ -133,9 +136,10 @@ export default {
         let data = response.data
         if (data.resCode === 0) {
           root.$message.success(data.message)
+          firstCategoryDisable.value = true
         }
-        category.current.category_name = data.data.categoryName
         refs.ruleForm.resetFields()
+        category.current = []
         getInfoCategoryAll()
       }).catch(error => {
         console.log(error)
@@ -156,12 +160,14 @@ export default {
 
     /** 获取消息分类信息 */
     const getInfoCategoryAll = () => {
-      GetInfoCategoryAll().then(response => {
-        let data = response.data.data
-        category.item = data
-      }).catch(error => {
-        console.log(error)
-      })
+      getInfoCategory()
+      category.item = categoryItem
+      // GetInfoCategoryAll().then(response => {
+      //   let data = response.data.data
+      //   category.item = data
+      // }).catch(error => {
+      //   console.log(error)
+      // })
     }
 
     // 确认删除一级分类信息
@@ -195,6 +201,11 @@ export default {
      */
     onMounted(() => {
       getInfoCategoryAll()
+    })
+
+    /** watch数据监听 */
+    watch(() => categoryItem.item, (value) => {
+      category.item = value
     })
 
     return {
