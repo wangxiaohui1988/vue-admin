@@ -98,7 +98,7 @@
         </el-pagination>
       </el-col>
     </el-row>
-    <DialogInfo :flag="dialogFormVisible" @formVisible="changeDialogFormVisible"></DialogInfo>
+    <DialogInfo :flag="dialogFormVisible" @formVisible="changeDialogFormVisible" :category="options.category"></DialogInfo>
   </div>
 </template>
 <script>
