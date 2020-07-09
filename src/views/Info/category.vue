@@ -11,7 +11,7 @@
               <h4>
                 <svg-icon icon-class="plus"></svg-icon>
                 {{ firstItem.category_name }}
-                <el-button type="danger" size="mini" round>编辑</el-button>
+                <el-button type="danger" size="mini" round @click="editCategory({data:firstItem, type:'first_category_edit'})">编辑</el-button>
                 <el-button type="success" size="mini" round>添加子级</el-button>
                 <el-button size="mini" round @click="delFirstCategory(firstItem.id)">删除</el-button>
               </h4>
@@ -48,7 +48,7 @@
 </template>
 <script>
 import { reactive, ref, onMounted } from '@vue/composition-api'
-import { AddFirstCategory, GetInfoCategoryAll, DelFirstCategory } from '@/api/news'
+import { AddFirstCategory, GetInfoCategoryAll, DelFirstCategory, EditFirstCategory } from '@/api/news'
 import { global } from '@/utils/global-vue3.0'
 export default {
   name: 'category',
@@ -71,7 +71,8 @@ export default {
     })
 
     const category = reactive({
-      item: []
+      item: [],
+      current: []
     })
 
     /** 函数定义 */
@@ -112,11 +113,44 @@ export default {
       })
     }
 
-    /** 添加一级分类 */
+    const editCategory = (params) => {
+      submitButtonType.value = params.type
+      submitButtonDisable.value = false
+      firstCategoryDisable.value = false
+      ruleForm.categoryName = params.data.category_name
+      category.current = params.data
+    }
+
+    const editFirstCategory = () => {
+      if (category.current.length === 0) {
+        root.$message.error('未选择分类！！')
+      }
+      let requestData = {
+        id: category.current.id,
+        categoryName: ruleForm.categoryName
+      }
+      EditFirstCategory(requestData).then(response => {
+        let data = response.data
+        if (data.resCode === 0) {
+          root.$message.success(data.message)
+        }
+        category.current.category_name = data.data.categoryName
+        refs.ruleForm.resetFields()
+        getInfoCategoryAll()
+      }).catch(error => {
+        console.log(error)
+      })
+    }
+
+    // 提交
     const submit = () => {
       console.log(submitButtonType.value)
       if (submitButtonType.value === 'first_category_add') {
         addFirstCategory()
+      }
+
+      if (submitButtonType.value === 'first_category_edit') {
+        editFirstCategory()
       }
     }
 
@@ -172,6 +206,7 @@ export default {
       ruleForm,
       addFirst,
       submit,
+      editCategory,
       getInfoCategoryAll,
       delFirstCategory
     }

@@ -18,10 +18,20 @@ export function GetInfoCategoryAll (data) {
   })
 }
 
+/** 删除一级分类 */
 export function DelFirstCategory (data) {
   return service.request({
     method: 'post',
     url: '/news/deleteCategory/',
+    data
+  })
+}
+
+/** 修改一级分类 */
+export function EditFirstCategory (data) {
+  return service.request({
+    method: 'post',
+    url: '/news/editCategory/',
     data
   })
 }
