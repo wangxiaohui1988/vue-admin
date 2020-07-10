@@ -35,3 +35,30 @@ export function EditFirstCategory (data) {
     data
   })
 }
+
+/** 新增信息 */
+export function AddInfo (data) {
+  return service.request({
+    method: 'post',
+    url: '/news/add/',
+    data
+  })
+}
+
+/** 获取信息数据 */
+export function GetList (data) {
+  return service.request({
+    method: 'post',
+    url: '/news/getList/',
+    data
+  })
+}
+
+/** 删除信息 */
+export function DeletInfo (data) {
+  return service.request({
+    method: 'post',
+    url: '/news/deleteInfo/',
+    data
+  })
+}

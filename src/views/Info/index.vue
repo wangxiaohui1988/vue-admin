@@ -63,11 +63,13 @@
 
     <!-- 表格 -->
     <div class="black-space-30"></div>
-    <el-table :data="tableData" style="width: 100%">
+    <el-table :data="tableData.item"
+    style="width: 100%"
+    @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="45"></el-table-column>
       <el-table-column prop="title" label="标题" width="400"></el-table-column>
-      <el-table-column prop="categoryId" label="类型" width="80"></el-table-column>
-      <el-table-column prop="createDate" label="日期" width="300"></el-table-column>
+      <el-table-column prop="categoryId" label="类型" width="80" :formatter="toCategory"></el-table-column>
+      <el-table-column prop="createDate" label="日期" width="300" :formatter="fromatterDate"></el-table-column>
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -92,9 +94,9 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :page-sizes="[10, 20, 30, 40]"
-          :page-size="20"
+          :page-size="10"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="100">
+          :total="total">
         </el-pagination>
       </el-col>
     </el-row>
@@ -105,6 +107,8 @@
 import { reactive, ref, onMounted } from '@vue/composition-api'
 import DialogInfo from './dialog/info'
 import { global } from '@/utils/global-vue3.0'
+import { timestampToTime } from '@/utils/common'
+import { GetList, DeletInfo } from '@/api/news'
 export default {
   name: 'infoIndex',
   components: { DialogInfo },
@@ -115,6 +119,8 @@ export default {
     const searchKey = ref('')
     const searchKeyWork = ref('')
     const dialogFormVisible = ref(false)
+    const total = ref(0)
+    const deletInfoId = ref('')
 
     const options = reactive({
       category: []
@@ -131,37 +137,20 @@ export default {
       }
     ])
 
-    const tableData = ([
-      {
-        title: '师者为师亦为范 习近平这样关心“筑梦人”',
-        categoryId: '国内信息',
-        createDate: '2016-05-03',
-        user: '王小虎'
-      },
-      {
-        title: '师者为师亦为范 习近平这样关心“筑梦人”',
-        categoryId: '国内信息',
-        createDate: '2016-05-03',
-        user: '王小虎'
-      },
-      {
-        title: '师者为师亦为范 习近平这样关心“筑梦人”',
-        categoryId: '国内信息',
-        createDate: '2016-05-03',
-        user: '王小虎'
-      },
-      {
-        title: '师者为师亦为范 习近平这样关心“筑梦人”',
-        categoryId: '国内信息',
-        createDate: '2016-05-03',
-        user: '王小虎'
-      }])
+    const tableData = reactive({
+      item: []
+    })
+
+    const page = reactive({
+      pageSize: 10,
+      pageNumber: 1
+    })
 
     const handleEdit = (index, row) => {
       // console.log(index, row)
     }
     const deleteItem = (index, row) => {
-      console.log(index, row)
+      deletInfoId.value = [row.id]
       // root.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
       //   confirmButtonText: '确定',
       //   cancelButtonText: '取消',
@@ -197,21 +186,27 @@ export default {
     }
 
     const batchDelete = (index, row) => {
-      console.log(index, row)
-      // 调用全局方法
-      // root.confirm({
-      //   content: '确认删除选中的全部记录?',
-      //   tip: '提示',
-      //   type: 'success',
-      //   fn: confirmDelete
-      // })
-
       // Vue3.0方法封装调用
       confirm({
         content: '确认删除选中的全部记录?',
         tip: '提示',
-        type: 'success',
+        type: 'warning',
         fn: confirmDelete
+      })
+    }
+
+    // 删除数据
+    const confirmDelete = (value) => {
+      DeletInfo({ id: deletInfoId.value }).then(response => {
+        let data = response.data
+        if (data.resCode === 0) {
+          root.$message.success(data.message)
+          deletInfoId.value = []
+        }
+        getList()
+      }).catch(error => {
+        console.log(error)
+        deletInfoId.value = []
       })
     }
 
@@ -224,30 +219,68 @@ export default {
       })
     }
 
-    const confirmDelete = (value) => {
-      console.log('删除数据操作')
+    // 获取信息列表
+    const getList = () => {
+      let requestData = {
+        categoryId: '',
+        startTiem: '',
+        endTime: '',
+        title: '',
+        id: '',
+        pageNumber: page.pageNumber,
+        pageSize: page.pageSize
+      }
+      GetList(requestData).then(response => {
+        let resData = response.data
+        tableData.item = resData.data.data
+        total.value = resData.data.total
+      }).catch(error => {
+        console.log(error)
+      })
     }
 
     const handleSizeChange = (val) => {
-      console.log(`每页 ${val} 条`)
+      page.pageSize = val
     }
+
     const handleCurrentChange = (val) => {
-      console.log(`当前页: ${val}`)
+      page.pageNumber = val
+      getList()
     }
     const changeDialogFormVisible = (formVisible) => {
-      console.log('dialogFormVisible', formVisible)
       dialogFormVisible.value = formVisible
+    }
+
+    //
+    const handleSelectionChange = (val) => {
+      let id = val.map(item => item.id)
+      deletInfoId.value = id
+    }
+
+    // 转化分类ID
+    const toCategory = (row) => {
+      let categoryId = row.categoryId
+      let categoryData = options.category.filter(item => item.id === categoryId)[0]
+      return categoryData.category_name
+    }
+
+    // 日期格式化
+    const fromatterDate = (row, column, cellValue, index) => {
+      return timestampToTime(row.createDate)
     }
 
     /** 生命周期 */
     onMounted(() => {
       // 获取分类信息
       getInfoCategory()
+      // 获取列表信息
+      getList()
     })
 
     return {
       dialogFormVisible,
       options,
+      total,
       options2,
       value,
       dateValue,
@@ -259,6 +292,9 @@ export default {
       batchDelete,
       handleSizeChange,
       handleCurrentChange,
+      toCategory,
+      fromatterDate,
+      handleSelectionChange,
       changeDialogFormVisible
     }
   }
