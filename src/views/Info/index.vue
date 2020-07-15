@@ -5,7 +5,7 @@
         <div class="label-wrap category">
           <label for="">分类：</label>
           <div class="warp-content">
-            <el-select v-model="value" clearable placeholder='请选择' style="width: 100%;">
+            <el-select v-model="categoryId" clearable placeholder='请选择' style="width: 100%;">
               <el-option
                 v-for="item in options.category"
                 :key="item.id"
@@ -24,7 +24,7 @@
               style="width: 100%;"
               v-model="dateValue"
               type="datetimerange"
-              format="yyyy 年 MM 月 dd 日"
+              format="yyyy年 MM 月 dd 日"
               value-format="yyyy-MM-dd HH:mm:ss"
               align="right"
               start-placeholder="开始日期"
@@ -53,7 +53,7 @@
         <el-input v-model="searchKeyWork" placeholder="请输入内容" style="width: 100%;"></el-input>
       </el-col>
       <el-col :span="2">
-        <el-button type="danger" class="pull-left" style="width: 100%;">搜索</el-button>
+        <el-button type="danger" class="pull-left" style="width: 100%;" @click="getList">搜索</el-button>
       </el-col>
       <!-- <el-col :span="3"><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></el-col> -->
       <el-col :span="2">
@@ -114,7 +114,7 @@ export default {
   components: { DialogInfo },
   setup (props, { root }) {
     const { confirm } = global()
-    const value = ref('')
+    const categoryId = ref('')
     const dateValue = ref('')
     const searchKey = ref('')
     const searchKeyWork = ref('')
@@ -219,18 +219,29 @@ export default {
       })
     }
 
-    // 获取信息列表
-    const getList = () => {
+    const formaterData = () => {
       let requestData = {
-        categoryId: '',
-        startTiem: '',
-        endTime: '',
-        title: '',
-        id: '',
         pageNumber: page.pageNumber,
         pageSize: page.pageSize
       }
-      GetList(requestData).then(response => {
+      if (categoryId.value) {
+        requestData.categoryId = categoryId.value
+      }
+      if (dateValue.value.length > 0 && dateValue.value != null) {
+        requestData.startTiem = dateValue.value[0]
+        requestData.endTime = dateValue.value[1]
+      }
+      if (searchKeyWork.value) {
+        requestData[searchKey.value] = searchKeyWork.value
+      }
+      return requestData
+    }
+
+    // 获取信息列表
+    const getList = () => {
+      formaterData()
+
+      GetList(formaterData()).then(response => {
         let resData = response.data
         tableData.item = resData.data.data
         total.value = resData.data.total
@@ -282,11 +293,12 @@ export default {
       options,
       total,
       options2,
-      value,
+      categoryId,
       dateValue,
       searchKey,
       searchKeyWork,
       tableData,
+      getList,
       handleEdit,
       deleteItem,
       batchDelete,
