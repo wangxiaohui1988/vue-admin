@@ -12,7 +12,7 @@
                 <svg-icon icon-class="plus"></svg-icon>
                 {{ firstItem.category_name }}
                 <el-button type="danger" size="mini" round @click="editCategory({data:firstItem, type:'first_category_edit'})">编辑</el-button>
-                <el-button type="success" size="mini" round>添加子级</el-button>
+                <el-button type="success" size="mini" round @click="addSecondCategory({data:firstItem, type:'second_category_add'})">添加子级</el-button>
                 <el-button size="mini" round @click="delFirstCategory(firstItem.id)">删除</el-button>
               </h4>
               <!-- 子级分类 -->
@@ -31,7 +31,7 @@
         <el-col :span="16">
           <h4 class="menu-title">一级分类编辑</h4>
           <el-form :model="ruleForm"  ref="ruleForm" label-width="142px" class="from-wrap">
-            <el-form-item label="一级分类名称" prop="categoryName" >
+            <el-form-item label="一级分类名称" prop="categoryName" v-if="secondCategoryInput">
               <el-input v-model="ruleForm.categoryName" autocomplete="off" :disabled="firstCategoryDisable"></el-input>
             </el-form-item>
             <el-form-item label="二级分类名称" prop="secCategoryName" v-if="categoryChildrenInput">
@@ -48,7 +48,7 @@
 </template>
 <script>
 import { reactive, ref, onMounted, watch } from '@vue/composition-api'
-import { AddFirstCategory, DelFirstCategory, EditFirstCategory } from '@/api/news'
+import { AddFirstCategory, DelFirstCategory, EditFirstCategory, AddChildrenCategory } from '@/api/news'
 import { global } from '@/utils/global-vue3.0'
 import { common } from '@/utils/common'
 export default {
@@ -59,6 +59,7 @@ export default {
     const { categoryItem, getInfoCategory } = common()
     /** ref数据定义 */
     const categoryChildrenInput = ref(true)
+    const secondCategoryInput = ref(true)
     const firstCategoryDisable = ref(true)
     const secCategoryDisable = ref(true)
     const submitButtonDisable = ref(true)
@@ -87,6 +88,7 @@ export default {
       categoryChildrenInput.value = false
     }
 
+    // 添加一级分类
     const addFirstCategory = () => {
       if (!ruleForm.categoryName) {
         root.$message.error('一级分类不能为空！')
@@ -114,6 +116,7 @@ export default {
       })
     }
 
+    // 修改一级分类按钮
     const editCategory = (params) => {
       submitButtonType.value = params.type
       submitButtonDisable.value = false
@@ -123,6 +126,7 @@ export default {
       category.current = params.data
     }
 
+    // 修改一级分类
     const editFirstCategory = () => {
       if (category.current.length === 0) {
         root.$message.error('未选择分类！！')
@@ -146,6 +150,50 @@ export default {
       })
     }
 
+    // 添加子级按钮处理
+    const addSecondCategory = (params) => {
+      submitButtonType.value = params.type
+      submitButtonDisable.value = false
+      firstCategoryDisable.value = true
+      secondCategoryInput.value = true
+      categoryChildrenInput.value = true
+      secCategoryDisable.value = false
+      ruleForm.categoryName = params.data.category_name
+      category.current = params.data
+    }
+
+    // 添加子级
+    const addChildrenCategory = () => {
+      if (category.current.length === 0) {
+        root.$message.error('未选择分类！！')
+        return
+      }
+
+      if (ruleForm.secCategoryName === '') {
+        root.$message.error('请输入子级名称')
+        return
+      }
+
+      let requestData = {
+        categoryName: ruleForm.secCategoryName,
+        parentId: category.current.id
+      }
+
+      AddChildrenCategory(requestData).then(response => {
+        let resData = response.data
+        if (resData.resCode === 0) {
+          root.$message.success('信息分类添加子级成功！！')
+          secCategoryDisable.value = true
+          submitButtonType.value = true
+          refs.ruleForm.resetFields()
+        }
+        getInfoCategoryAll()
+      }).catch(error => {
+        console.log(error)
+      })
+      console.log('hahh')
+    }
+
     // 提交
     const submit = () => {
       console.log(submitButtonType.value)
@@ -155,6 +203,10 @@ export default {
 
       if (submitButtonType.value === 'first_category_edit') {
         editFirstCategory()
+      }
+
+      if (submitButtonType.value === 'second_category_add') {
+        addChildrenCategory()
       }
     }
 
@@ -210,6 +262,7 @@ export default {
 
     return {
       categoryChildrenInput,
+      secondCategoryInput,
       firstCategoryDisable,
       secCategoryDisable,
       submitButtonDisable,
@@ -218,6 +271,7 @@ export default {
       addFirst,
       submit,
       editCategory,
+      addSecondCategory,
       getInfoCategoryAll,
       delFirstCategory
     }

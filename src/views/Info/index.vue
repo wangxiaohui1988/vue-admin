@@ -101,24 +101,28 @@
       </el-col>
     </el-row>
     <DialogInfo :flag="dialogFormVisible" @formVisible="changeDialogFormVisible" :category="options.category"></DialogInfo>
+    <EditDialogInfo :flag="editDialogVisible" :id="infoId" @editFormVisible="changeEditDialogVisible" :category="options.category"></EditDialogInfo>
   </div>
 </template>
 <script>
 import { reactive, ref, onMounted } from '@vue/composition-api'
 import DialogInfo from './dialog/info'
+import EditDialogInfo from './dialog/edit'
 import { global } from '@/utils/global-vue3.0'
 import { timestampToTime } from '@/utils/common'
 import { GetList, DeletInfo } from '@/api/news'
 export default {
   name: 'infoIndex',
-  components: { DialogInfo },
+  components: { DialogInfo, EditDialogInfo },
   setup (props, { root }) {
     const { confirm } = global()
     const categoryId = ref('')
+    const infoId = ref('')
     const dateValue = ref('')
     const searchKey = ref('')
     const searchKeyWork = ref('')
     const dialogFormVisible = ref(false)
+    const editDialogVisible = ref(false)
     const total = ref(0)
     const deletInfoId = ref('')
 
@@ -147,8 +151,10 @@ export default {
     })
 
     const handleEdit = (index, row) => {
-      // console.log(index, row)
+      editDialogVisible.value = true
+      infoId.value = row.id
     }
+
     const deleteItem = (index, row) => {
       deletInfoId.value = [row.id]
       // root.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -240,7 +246,6 @@ export default {
     // 获取信息列表
     const getList = () => {
       formaterData()
-
       GetList(formaterData()).then(response => {
         let resData = response.data
         tableData.item = resData.data.data
@@ -258,8 +263,15 @@ export default {
       page.pageNumber = val
       getList()
     }
+
     const changeDialogFormVisible = (formVisible) => {
       dialogFormVisible.value = formVisible
+    }
+
+    const changeEditDialogVisible = (formVisible) => {
+      console.log(formVisible)
+      editDialogVisible.value = formVisible
+      getList()
     }
 
     //
@@ -290,10 +302,12 @@ export default {
 
     return {
       dialogFormVisible,
+      editDialogVisible,
       options,
       total,
       options2,
       categoryId,
+      infoId,
       dateValue,
       searchKey,
       searchKeyWork,
@@ -307,7 +321,8 @@ export default {
       toCategory,
       fromatterDate,
       handleSelectionChange,
-      changeDialogFormVisible
+      changeDialogFormVisible,
+      changeEditDialogVisible
     }
   }
 }

@@ -62,3 +62,21 @@ export function DeletInfo (data) {
     data
   })
 }
+
+/** 修改信息 */
+export function EditInfo (data) {
+  return service.request({
+    method: 'post',
+    url: '/news/editInfo/',
+    data
+  })
+}
+
+/** 信息分类添加子级 */
+export function AddChildrenCategory (data) {
+  return service.request({
+    method: 'post',
+    url: '/news/addChildrenCategory/',
+    data
+  })
+}
