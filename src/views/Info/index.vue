@@ -63,23 +63,19 @@
 
     <!-- 表格 -->
     <div class="black-space-30"></div>
-    <el-table :data="tableData.item"
+    <el-table :data="tableData.item" border
     style="width: 100%"
     @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="45"></el-table-column>
       <el-table-column prop="title" label="标题" width="400"></el-table-column>
       <el-table-column prop="categoryId" label="类型" width="80" :formatter="toCategory"></el-table-column>
-      <el-table-column prop="createDate" label="日期" width="300" :formatter="fromatterDate"></el-table-column>
+      <el-table-column prop="createDate" label="日期" width="200" :formatter="fromatterDate"></el-table-column>
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="deleteItem(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini" type="danger" @click="deleteItem(scope.$index, scope.row)" class="hiden-button">删除</el-button>
+          <el-button size="mini" type="success" @click="handleEdit(scope.$index, scope.row)" class="hiden-button">编辑</el-button>
+          <el-button type="success" size="mini" @click="handleDetailEdit(scope.$index, scope.row)" class="hiden-button">编辑详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -150,9 +146,26 @@ export default {
       pageNumber: 1
     })
 
+    // 信息修改
     const handleEdit = (index, row) => {
       editDialogVisible.value = true
       infoId.value = row.id
+    }
+
+    // 信息详情修改
+    const handleDetailEdit = (index, row) => {
+      console.log(row)
+      // 预存值
+      root.$store.commit('infodetail/SET_ID', row.id)
+      root.$store.commit('infodetail/SET_TITLE', row.title)
+      // 跳转页面
+      root.$router.push({
+        name: 'InfoDetail',
+        params: {
+          id: row.id,
+          title: row.title
+        }
+      })
     }
 
     const deleteItem = (index, row) => {
@@ -314,6 +327,7 @@ export default {
       tableData,
       getList,
       handleEdit,
+      handleDetailEdit,
       deleteItem,
       batchDelete,
       handleSizeChange,
