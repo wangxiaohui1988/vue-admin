@@ -67,10 +67,10 @@
     style="width: 100%"
     @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="45"></el-table-column>
-      <el-table-column prop="title" label="标题" width="400"></el-table-column>
+      <el-table-column prop="title" label="标题" width="300"></el-table-column>
       <el-table-column prop="categoryId" label="类型" width="80" :formatter="toCategory"></el-table-column>
       <el-table-column prop="createDate" label="日期" width="200" :formatter="fromatterDate"></el-table-column>
-      <el-table-column prop="user" label="管理员" width="115"></el-table-column>
+      <el-table-column prop="user" label="管理员" width="80"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="danger" @click="deleteItem(scope.$index, scope.row)" class="hiden-button">删除</el-button>
@@ -154,7 +154,6 @@ export default {
 
     // 信息详情修改
     const handleDetailEdit = (index, row) => {
-      console.log(row)
       // 预存值
       root.$store.commit('infodetail/SET_ID', row.id)
       root.$store.commit('infodetail/SET_TITLE', row.title)
