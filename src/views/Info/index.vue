@@ -38,14 +38,15 @@
         <div class="label-wrap key-work">
           <label for="">关键字：</label>
           <div class="warp-content">
-            <el-select v-model="searchKey" clearable placeholder='请选择' style="width: 100%;">
+            <SelectC :config="data.configOption"></SelectC>
+            <!-- <el-select v-model="searchKey" clearable placeholder='请选择' style="width: 100%;">
               <el-option
                 v-for="item in options2"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
               </el-option>
-            </el-select>
+            </el-select> -->
           </div>
         </div>
       </el-col>
@@ -104,12 +105,13 @@
 import { reactive, ref, onMounted } from '@vue/composition-api'
 import DialogInfo from './dialog/info'
 import EditDialogInfo from './dialog/edit'
+import SelectC from 'components/select/index'
 import { global } from '@/utils/global-vue3.0'
 import { timestampToTime } from '@/utils/common'
 import { GetList, DeletInfo } from '@/api/news'
 export default {
   name: 'infoIndex',
-  components: { DialogInfo, EditDialogInfo },
+  components: { DialogInfo, EditDialogInfo, SelectC },
   setup (props, { root }) {
     const { confirm } = global()
     const categoryId = ref('')
@@ -121,6 +123,12 @@ export default {
     const editDialogVisible = ref(false)
     const total = ref(0)
     const deletInfoId = ref('')
+
+    const data = reactive({
+      configOption: {
+        init: ['id', 'title']
+      }
+    })
 
     const options = reactive({
       category: []
@@ -318,6 +326,7 @@ export default {
       options,
       total,
       options2,
+      data,
       categoryId,
       infoId,
       dateValue,
